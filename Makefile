@@ -36,7 +36,8 @@ PYTHON_INSTALL_ROOT = /usr/local/python
 
 SRCDIR=.
 VERSIONS := 3.14.0_b1 3.13.3__nogil 3.13.3__jit 3.12.10 3.11.12 3.9.22 3.8.20
-PYTHON_3.13.2_CUSTOM_OPTS := --disable-gil 
+PYTHON_3.13.3__nogil_CUSTOM_OPTS := --disable-gil 
+PYTHON_3.13.3__jit_CUSTOM_OPTS := --enable-experimental-jit=yes
 
 
 # NON-CONFIGURABLE OPTIONS #####################
