@@ -1,0 +1,85 @@
+# Sourcable bash script to select a version of python
+# using pythonizer
+
+
+# join a list of tokens with some intermediate string
+string_join() {
+    local join=$1; shift
+    local result=$1; shift
+    for p in "$@"; do
+        result="${result}${join}${p}"
+    done
+    echo -n "$result"
+    set +x
+}
+
+# Add and remove paths from the dynamic library path: needs
+# adapting for MacOS.
+# Not good if there are spaces. 
+ld_add() {
+    if [[ -v DYLD_LIBRARY_PATH ]]; then
+        export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$(string_join ':' $@)
+    else
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(string_join ':' $@)
+    fi
+}
+
+ld_prepend() {
+    if [[ -v DYLD_LIBRARY_PATH ]]; then
+        export DYLD_LIBRARY_PATH=$(string_join ':' $@):$DYLD_LIBRARY_PATH
+    else
+        export LD_LIBRARY_PATH=$(string_join ':' $@):$LD_LIBRARY_PATH
+    fi
+}
+# Remove elements from the path. Takes a grep regexp as input
+ld_remove() {
+    local item=$1; shift
+    local new_path=${LD_LIBRARY_PATH//$item:/}
+    export LD_LIBRARY_PATH=${new_path} 
+}
+
+
+path_add() {
+    export PATH=$PATH:$(string_join ':' $@)
+}
+
+path_prepend() {
+    PATH=$(string_join ':' "$@"):$PATH
+    export PATH
+}
+
+# Remove elements from the path. Takes a grep regexp as input
+path_remove() {
+    local item=$1; shift
+    local new_path=${PATH//$item:/}
+    export PATH="${new_path}" 
+}
+
+pythonation_activate() {
+local PYTHONATION_ROOT=/usr/local/python
+
+echo "ARGS: $@"
+if [[ ! -z $1 ]]; then
+    local PYTHON_VERSION=$1
+    local PYTHON_DIR="$PYTHON_ROOT/$PYTHON_VERSION"
+    
+    if [[ ! -d "$PYTHON_DIR" ]]; then
+      echo "looked in $PYTHON_DIR but couldn't find a python build"
+      exit 1
+    fi
+
+    local PYTHON_BIN="$PYTHON_DIR/bin"
+    path_remove $PYTHON_BIN
+    path_prepend $PYTHON_BIN
+
+    local PYTHON_LD="$PYTHON_DIR/lib"
+    ld_remove $PYTHON_LD
+    ld_prepend $PYTHON_LD
+ 
+else
+    echo "Available versions $(cd $PYTHON_ROOT && echo *)"
+fi
+
+}
+
+pythonation_activate "$@"

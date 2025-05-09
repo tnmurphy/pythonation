@@ -51,8 +51,18 @@ SPACE:=
 
 BASE_VERSION_EXP := (^[0-9]+\.[0-9]+\.[0-9]+)([a-z]+[0-9]+)?
 
+INSTALL_DIRS=
 .PHONY: install-all
 install-all:
+	@echo "Installing Python $$^"
+	for VERSION in $$INSTALL_DIRS; do \
+	if [[ -d $$VERSION ]]; then \
+	cd "$$VERSION" &&  {\
+	if [[ -f libpython3.so ]]; then sudo make install; done\
+	}; \
+	fi; \
+	done \
+
 
 # Macro for building a custom python which might comprise
 # a specific version of python with custom build options. 
@@ -67,6 +77,7 @@ PYTHON_$1_TARNAME:=Python-$$(PYTHON_$(1)_VERSION)$$(PYTHON_$(1)_RC).tar.xz
 PYTHON_$1_TAR:=$(SRCDIR)/$$(PYTHON_$1_TARNAME)
 
 PYTHON_$1_BUILD:=$(SRCDIR)/build-$1
+INSTALL_DIRS+=$(SRCDIR)/build-$1
 
 #  Installation location /usr/local/python/<version>
 PYTHON_$1_TARGET_PATH:=$(PYTHON_INSTALL_ROOT)/$1
@@ -121,12 +132,14 @@ install-python-$1: python-$1
 build-all: python-$1
 
 .PHONY: install-all
-install-all: install-python-$1
+install-all: python-$1
 
 $$(PYTHON_$1_TAR):
 	wget -P $(SRCDIR) https://www.python.org/ftp/python/$$(PYTHON_$1_VERSION)/$$(PYTHON_$1_TARNAME)
 
+
 endef
+
 
 $(foreach version,$(VERSIONS),$(eval $(call build_python,$(version))))
 
