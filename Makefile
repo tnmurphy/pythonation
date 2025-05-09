@@ -106,22 +106,29 @@ $$(PYTHON_$1_BUILD)/Makefile: $$(PYTHON_$1_TAR)
                     --enable-optimizations; \
 	}
 
-install-python-$(1): python-$(1)
-	@echo "Installing Python $(1)"
+install-python-$1: python-$1
+	@echo "Installing Python $1"
 	cd "$$(PYTHON_$1_BUILD)" &&  {\
 	sudo make install; \
 	}
 
 .PHONY: build-all
-build-all: python-$(1)
+build-all: python-$1
 
 .PHONY: install-all
-install-all: install-python-$(1)
+install-all: install-python-$1
 
-$$(PYTHON_TAR_$(1)):
+$$(PYTHON_$1_TAR):
 	wget -P $(SRCDIR) https://www.python.org/ftp/python/$$(PYTHON_$1_VERSION)/$$(PYTHON_$1_TARNAME)
 
 endef
 
-$(foreach version,$(VERSIONS),$(info $(call build_python,$(version))))
+$(foreach version,$(VERSIONS),$(eval $(call build_python,$(version))))
+
+help:
+	@echo "Versions you can build: $(VERSIONS)" 
+	@echo "Individual version targets:" 
+	@echo "    build: $(foreach version,$(VERSIONS),python-$(version))"
+	@echo "    install: $(foreach version,$(VERSIONS),install-python-$(version))"
+
 
