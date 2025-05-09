@@ -34,10 +34,14 @@ PYTHON_INSTALL_ROOT = /usr/local/python
 # run `make install-python-<version>` to build and install a specific version of python
 #
 
-SRCDIR=.
-VERSIONS := 3.14.0_b1 3.13.3__nogil 3.13.3__jit 3.12.10 3.11.12 3.9.22 3.8.20
+VERSIONS := 3.14.0_b1 3.13.3__nogil 3.12.10 3.11.12 3.9.22 3.8.20
+# VERSIONS := 3.14.0_b1 3.13.3__nogil 3.13.3__jit 3.12.10 3.11.12 3.9.22 3.8.20
 PYTHON_3.13.3__nogil_CUSTOM_OPTS := --disable-gil 
-PYTHON_3.13.3__jit_CUSTOM_OPTS := --enable-experimental-jit=yes
+#PYTHON_3.13.3__jit_CUSTOM_OPTS := --enable-experimental-jit=yes
+
+#PYTHON_BUILD_JOBS=6
+PYTHON_BUILD_JOBS=$(shell cat /proc/cpuinfo | grep vendor_id | wc -l)
+SRCDIR=.
 
 
 # NON-CONFIGURABLE OPTIONS #####################
@@ -65,7 +69,7 @@ PYTHON_$1_TAR:=$(SRCDIR)/$$(PYTHON_$1_TARNAME)
 PYTHON_$1_BUILD:=$(SRCDIR)/build-$1
 
 #  Installation location /usr/local/python/<version>
-PYTHON_$1_TARGET_PATH:=$(PYTHON_INSTALL_ROOT)/python/$1
+PYTHON_$1_TARGET_PATH:=$(PYTHON_INSTALL_ROOT)/$1
 
 $$(info ==== PARAMETERS FOR $(1):)
 $$(info SPLIT=$$(SPLIT_VERSION_$(1)))
@@ -82,7 +86,7 @@ python-$(1): $$(PYTHON_$1_BUILD)/Makefile
 	@echo "Building Python $(1)"
 	cd "$$(PYTHON_$1_BUILD)" &&  {\
 	CFLAGS="$$$${CFLAGS} -fno-semantic-interposition"; \
-	make EXTRA_CFLAGS="$$$$CFLAGS" -j6;\
+	$(MAKE) EXTRA_CFLAGS="$$$$CFLAGS" -j$(PYTHON_BUILD_JOBS);\
 	}
 
 $$(PYTHON_$1_BUILD)/Makefile: $$(PYTHON_$1_TAR)
