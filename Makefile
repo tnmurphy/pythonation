@@ -28,7 +28,7 @@ PYTHON_INSTALL_ROOT = /usr/local/python
 # NOTE: you should  add the shared library paths for each version into
 # /etc/ld.so.conf.d/python.conf OR to add these paths to 
 # LD_LIBRARY_PATH in the environment.
-# e.g. $(TARGET_PATH)/lib
+# e.g. $(PYTHON_INSTALL_ROOT)/3.13.3/lib
 
 # run `make install-all` to build and install all versions of python
 # run `make install-python-<version>` to build and install a specific version of python
@@ -64,7 +64,7 @@ PYTHON_$1_TAR:=$(SRCDIR)/$$(PYTHON_$1_TARNAME)
 PYTHON_$1_BUILD:=$(SRCDIR)/build-$1
 
 #  Installation location /usr/local/python/<version>
-TARGET_PATH:=$(PYTHON_INSTALL_ROOT)/python/$1
+PYTHON_$1_TARGET_PATH:=$(PYTHON_INSTALL_ROOT)/python/$1
 
 $$(info ==== PARAMETERS FOR $(1):)
 $$(info SPLIT=$$(SPLIT_VERSION_$(1)))
@@ -90,7 +90,7 @@ $$(PYTHON_$1_BUILD)/Makefile: $$(PYTHON_$1_TAR)
 	tar -xf $$(^) --strip-components=1 -C "$$(PYTHON_$1_BUILD)"
 	cd "$$(PYTHON_$1_BUILD)" &&  {\
 	CFLAGS="$$$${CFLAGS} -fno-semantic-interposition"; \
-	./configure --prefix=$$(TARGET_PATH) \
+	./configure --prefix=$$(PYTHON_$1_TARGET_PATH) \
 	            --enable-shared \
 	            --with-computed-gotos \
 	            --with-lto \
