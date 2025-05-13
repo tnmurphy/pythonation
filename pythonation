@@ -61,7 +61,7 @@ local PYTHONATION_ROOT=/usr/local/python
 echo "ARGS: $@"
 if [[ ! -z $1 ]]; then
     local PYTHON_VERSION=$1
-    local PYTHON_DIR="$PYTHON_ROOT/$PYTHON_VERSION"
+    local PYTHON_DIR="$PYTHONATION_ROOT/$PYTHON_VERSION"
     
     if [[ ! -d "$PYTHON_DIR" ]]; then
       echo "looked in $PYTHON_DIR but couldn't find a python build"
@@ -77,7 +77,7 @@ if [[ ! -z $1 ]]; then
     ld_prepend $PYTHON_LD
  
 else
-    echo "Available versions $(cd $PYTHON_ROOT && echo *)"
+    echo "Available versions $(cd $PYTHONATION_ROOT && echo *)"
 fi
 
 }

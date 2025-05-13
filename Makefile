@@ -40,7 +40,7 @@ PYTHON_3.13.3__nogil_CUSTOM_OPTS := --disable-gil
 #PYTHON_3.13.3__jit_CUSTOM_OPTS := --enable-experimental-jit=yes
 
 #PYTHON_BUILD_JOBS=6
-PYTHON_BUILD_JOBS=$(shell cat /proc/cpuinfo | grep vendor_id | wc -l)
+PYTHON_BUILD_JOBS=$(shell cat /proc/cpuinfo | grep -E 'processor.*: *[0-9]+' | wc -l)
 SRCDIR=.
 
 
