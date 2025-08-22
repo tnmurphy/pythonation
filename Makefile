@@ -34,9 +34,8 @@ PYTHON_INSTALL_ROOT = /usr/local/python
 # run `make install-python-<version>` to build and install a specific version of python
 #
 
-VERSIONS := 3.14.0_b1 3.13.3__nogil 3.12.10 3.11.12 3.9.22 3.8.20
-# VERSIONS := 3.14.0_b1 3.13.3__nogil 3.13.3__jit 3.12.10 3.11.12 3.9.22 3.8.20
-PYTHON_3.13.3__nogil_CUSTOM_OPTS := --disable-gil 
+VERSIONS := 3.14.0_rc2 3.13.7__nogil 3.12.11 3.11.12 3.9.23 3.8.20
+PYTHON_3.13.7__nogil_CUSTOM_OPTS := --disable-gil 
 #PYTHON_3.13.3__jit_CUSTOM_OPTS := --enable-experimental-jit=yes
 
 #PYTHON_BUILD_JOBS=6

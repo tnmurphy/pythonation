@@ -43,9 +43,16 @@ path_add() {
     export PATH=$PATH:$(string_join ':' $@)
 }
 
+_prepend() {
+set -x
+    local name=$1; shift
+    local result=$(string_join ':' "$@"):"${!name}"
+    eval "export ${name}=\"${result}\""
+set +x
+}
+
 path_prepend() {
-    PATH=$(string_join ':' "$@"):$PATH
-    export PATH
+    _prepend PATH "$@"
 }
 
 # Remove elements from the path. Takes a grep regexp as input
@@ -58,26 +65,31 @@ path_remove() {
 pythonation_activate() {
 local PYTHONATION_ROOT=/usr/local/python
 
-echo "ARGS: $@"
+echo "Selected python version: $@"
 if [[ ! -z $1 ]]; then
     local PYTHON_VERSION=$1
     local PYTHON_DIR="$PYTHONATION_ROOT/$PYTHON_VERSION"
     
     if [[ ! -d "$PYTHON_DIR" ]]; then
-      echo "looked in $PYTHON_DIR but couldn't find a python build"
+      echo "looked in $PYTHON_DIR but couldn't find a python build" 1>&2
       exit 1
     fi
 
     local PYTHON_BIN="$PYTHON_DIR/bin"
     path_remove $PYTHON_BIN
     path_prepend $PYTHON_BIN
+    _prepend PYTHONPATH "$(echo $PYTHON_DIR/lib/python3*)"
 
     local PYTHON_LD="$PYTHON_DIR/lib"
     ld_remove $PYTHON_LD
     ld_prepend $PYTHON_LD
+
+    echo "PATH=$PATH"
+    echo "PYTHONPATH=$PYTHONPATH"
+    echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
  
 else
-    echo "Available versions $(cd $PYTHONATION_ROOT && echo *)"
+    echo "'$1' is not one of the available versions: $(cd $PYTHONATION_ROOT && echo *)" 1>&2
 fi
 
 }
